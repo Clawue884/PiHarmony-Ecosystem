@@ -1,0 +1,14 @@
+multi-asset-wallet/
+├── src/
+│   ├── modules/
+│   │   ├── wallet/        # Modul Dompet
+│   │   ├── auth/          # Modul Autentikasi
+│   │   └── nft/           # Modul NFT
+│   ├── main.ts            # File utama aplikasi
+│   └── app.module.ts      # Modul root aplikasi
+├── package.json           # Konfigurasi npm
+├── tsconfig.json          # Konfigurasi TypeScript
+└── README.md              # Dokumentasi
+
+
+---
