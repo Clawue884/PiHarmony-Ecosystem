@@ -1,0 +1,213 @@
+multi-asset-wallet/
+├── src/
+│   ├── modules/
+│   │   ├── wallet/        # Modul Dompet
+│   │   ├── auth/          # Modul Autentikasi
+│   │   └── nft/           # Modul NFT
+│   ├── main.ts            # File utama aplikasi
+│   └── app.module.ts      # Modul root aplikasi
+├── package.json           # Konfigurasi npm
+├── tsconfig.json          # Konfigurasi TypeScript
+└── README.md              # Dokumentasi
+
+
+---
+
+Kode: main.ts
+
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // Enable CORS
+  app.enableCors();
+
+  // Start the application
+  await app.listen(3000);
+  console.log('Multi-Asset Wallet API is running on http://localhost:3000');
+}
+bootstrap();
+
+
+---
+
+Kode: app.module.ts
+
+import { Module } from '@nestjs/common';
+import { WalletModule } from './modules/wallet/wallet.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { NftModule } from './modules/nft/nft.module';
+
+@Module({
+  imports: [WalletModule, AuthModule, NftModule],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}
+
+
+---
+
+Kode: Modul Dompet (wallet.module.ts)
+
+import { Module } from '@nestjs/common';
+import { WalletController } from './wallet.controller';
+import { WalletService } from './wallet.service';
+
+@Module({
+  controllers: [WalletController],
+  providers: [WalletService],
+})
+export class WalletModule {}
+
+
+---
+
+Kode: Controller Dompet (wallet.controller.ts)
+
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { WalletService } from './wallet.service';
+
+@Controller('wallet')
+export class WalletController {
+  constructor(private readonly walletService: WalletService) {}
+
+  @Post('create')
+  async createWallet(@Body('userId') userId: string) {
+    return this.walletService.createWallet(userId);
+  }
+
+  @Get(':userId')
+  async getWallet(@Param('userId') userId: string) {
+    return this.walletService.getWallet(userId);
+  }
+
+  @Post('transfer')
+  async transferAssets(@Body() transferData: any) {
+    return this.walletService.transferAssets(transferData);
+  }
+}
+
+
+---
+
+Kode: Service Dompet (wallet.service.ts)
+
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class WalletService {
+  private wallets = new Map<string, any>();
+
+  async createWallet(userId: string) {
+    const wallet = {
+      userId,
+      balance: { piCoin: 0, eth: 0, btc: 0 },
+      nft: [],
+      multiSig: [],
+    };
+    this.wallets.set(userId, wallet);
+    return wallet;
+  }
+
+  async getWallet(userId: string) {
+    return this.wallets.get(userId);
+  }
+
+  async transferAssets(data: {
+    fromUserId: string;
+    toUserId: string;
+    amount: number;
+    currency: string;
+  }) {
+    const senderWallet = this.wallets.get(data.fromUserId);
+    const receiverWallet = this.wallets.get(data.toUserId);
+
+    if (!senderWallet || !receiverWallet) {
+      throw new Error('Wallet not found');
+    }
+
+    if (senderWallet.balance[data.currency] < data.amount) {
+      throw new Error('Insufficient balance');
+    }
+
+    senderWallet.balance[data.currency] -= data.amount;
+    receiverWallet.balance[data.currency] += data.amount;
+
+    return { status: 'success', transaction: data };
+  }
+}
+
+
+---
+
+Kode: Modul Autentikasi (auth.module.ts)
+
+import { Module } from '@nestjs/common';
+import { AuthService } from './auth.service';
+
+@Module({
+  providers: [AuthService],
+  exports: [AuthService],
+})
+export class AuthModule {}
+
+
+---
+
+Kode: Service Autentikasi (auth.service.ts)
+
+import { Injectable } from '@nestjs/common';
+import * as crypto from 'crypto';
+
+@Injectable()
+export class AuthService {
+  validateBiometric(inputBiometricHash: string, storedHash: string): boolean {
+    return inputBiometricHash === storedHash;
+  }
+
+  generateMultiSigKey(): string {
+    return crypto.randomBytes(32).toString('hex');
+  }
+}
+
+
+---
+
+Kode: Modul NFT (nft.module.ts)
+
+import { Module } from '@nestjs/common';
+import { NftService } from './nft.service';
+
+@Module({
+  providers: [NftService],
+  exports: [NftService],
+})
+export class NftModule {}
+
+
+---
+
+Kode: Service NFT (nft.service.ts)
+
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class NftService {
+  private nftCollection = [];
+
+  createNft(userId: string, nftData: any) {
+    const nft = { ...nftData, owner: userId, id: this.nftCollection.length + 1 };
+    this.nftCollection.push(nft);
+    return nft;
+  }
+
+  getUserNfts(userId: string) {
+    return this.nftCollection.filter((nft) => nft.owner === userId);
+  }
+}
+
+
+---
