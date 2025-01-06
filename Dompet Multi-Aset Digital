@@ -1,11 +1,12 @@
-multi-asset-wallet/
-├── src/
-│   ├── modules/
-│   │   ├── wallet/        # Modul Dompet
-│   │   ├── auth/          # Modul Autentikasi
-│   │   └── nft/           # Modul NFT
-│   ├── main.ts            # File utama aplikasi
-│   └── app.module.ts      # Modul root aplikasi
-├── package.json           # Konfigurasi npm
-├── tsconfig.json          # Konfigurasi TypeScript
-└── README.md              # Dokumentasi
+Dompet Multi-Aset Digital dengan fitur penyimpanan Pi Coin, mata uang kripto lainnya, dan NFT. Kode ini mencakup backend (NestJS) untuk pengelolaan data dompet, serta penggunaan otentikasi biometrik dan dukungan multi-sig.
+
+1. Multi-Aset: Mendukung penyimpanan Pi Coin, BTC, ETH, dan NFT.
+
+
+2. Multi-Sig: Kunci kriptografi untuk keamanan tambahan.
+
+
+3. Otentikasi Biometrik: Verifikasi sidik jari atau wajah menggunakan hash.
+
+
+4. Modular: Struktur yang mudah diperluas.
