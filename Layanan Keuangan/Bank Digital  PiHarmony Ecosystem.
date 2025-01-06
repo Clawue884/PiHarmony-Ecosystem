@@ -1,0 +1,11 @@
+financial-service/
+├── src/
+│   ├── modules/
+│   │   ├── bank/          # Modul layanan perbankan
+│   │   ├── kyc/           # Modul KYC
+│   │   └── auth/          # Modul autentikasi
+│   ├── main.ts            # File utama aplikasi
+│   └── app.module.ts      # Modul root aplikasi
+├── package.json           # Konfigurasi npm
+├── tsconfig.json          # Konfigurasi TypeScript
+└── README.md              # Dokumentasi
